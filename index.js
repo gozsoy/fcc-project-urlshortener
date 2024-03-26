@@ -21,23 +21,22 @@ app.get('/', function(req, res) {
 
 let d = {}
 
+function isValidUrl(string) {
+  try {
+    let newUrl = new URL(string);
+    return newUrl.protocol === 'http:'
+  } catch (err) {
+    return false;
+  }
+}
+
 // Your first API endpoint
 app.post('/api/shorturl', function(req, res) {
 
   let temp_url = req.body.url
 
-  try{
+  if (isValidUrl(temp_url)){
     //checks if url format is valid
-    temp_url = new URL(temp_url)
-
-    //checks if hostname is valid
-    dns.lookup(temp_url.hostname, (err, add, fam)=>{
-      if (err){
-        res.json({
-          error: temp_url
-        })        
-      }
-    })
 
     const idx = Object.keys(d).length + 1
 
@@ -49,9 +48,9 @@ app.post('/api/shorturl', function(req, res) {
     });
     
   }
-  catch{
+  else{
     res.json({
-      error: temp_url
+      error: 'invalid url'
     })
   }
 });
@@ -60,7 +59,6 @@ app.post('/api/shorturl', function(req, res) {
 app.get('/api/shorturl/:short', (req, res) => {
 
   let temp_idx = req.params.short
-  console.log(d)
 
   res.redirect(d[temp_idx])
 
